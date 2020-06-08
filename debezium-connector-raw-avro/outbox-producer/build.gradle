@@ -1,0 +1,59 @@
+
+plugins {
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id 'application'
+    id "com.commercehub.gradle.plugin.avro" version "0.19.1"
+}
+
+mainClassName = 'outbox.events.producer.MainApplication'
+group = 'outbox.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+def avroDir = file("src/generated/java/avro")
+
+clean {
+    delete = avroDir
+}
+
+avro {
+    createOptionalGetters = true
+    gettersReturnOptional = true
+    fieldVisibility = "PRIVATE"
+    createSetters = false
+    outputCharacterEncoding = "UTF-8"
+}
+
+def generateAvro = tasks.register("generateAvro", com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
+    source("src/main/avro")
+    include("**/*.avsc")
+    outputDir = avroDir
+}
+
+compileJava.dependsOn(generateAvro)
+
+sourceSets {
+    main.java.exclude "build/generated-main-avro-java"
+}
+
+dependencies {
+    implementation 'org.apache.avro:avro:1.9.2'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'mysql:mysql-connector-java'
+    testImplementation('org.hsqldb:hsqldb')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

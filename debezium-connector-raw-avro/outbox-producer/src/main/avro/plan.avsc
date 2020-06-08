@@ -1,0 +1,11 @@
+{
+  "namespace": "events",
+  "type": "record",
+  "name": "Plan",
+  "fields": [
+    {
+      "name": "planId",
+      "type": "long"
+    }
+  ]
+}

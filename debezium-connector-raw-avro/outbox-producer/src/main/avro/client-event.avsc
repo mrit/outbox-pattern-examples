@@ -1,0 +1,17 @@
+{
+  "namespace": "events",
+  "type": "record",
+  "name": "ClientEvent",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    }, {
+        "name": "plans",
+        "type": {
+          "type": "array",
+          "items": "events.Plan"
+        }
+      }
+  ]
+}
